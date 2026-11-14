@@ -1,0 +1,134 @@
+{
+  "dns": {
+    "servers": [
+      "77.88.8.8",
+      "1.1.1.1"
+    ],
+    "queryStrategy": "UseIPv4"
+  },
+  "log": {
+    "loglevel": "warning"
+  },
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "domain:gemini.google.com",
+          "domain:aistudio.google.com",
+          "domain:generativelanguage.googleapis.com",
+          "domain:alkalimining-pa.googleapis.com",
+          "domain:proactivebackend-pa.googleapis.com",
+          "domain:alkalimakersuite-pa.clients6.google.com",
+          "domain:makersuite.google.com",
+          "domain:ai.google.dev",
+          "domain:bard.google.com",
+          "domain:generativeai.google",
+          "domain:deepmind.com",
+          "domain:deepmind.google",
+          "domain:jnn-pa.googleapis.com",
+          "domain:waa-pa.clients6.google.com",
+          "domain:optimizationguide-pa.googleapis.com",
+          "domain:content-autofill.googleapis.com",
+          "domain:ogads-pa.clients6.google.com",
+          "domain:robinfrontend-pa.googleapis.com"
+        ],
+        "outboundTag": "turkey"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ads",
+          "geosite:win-spy",
+          "geosite:torrent"
+        ],
+        "outboundTag": "block"
+      },
+      {
+        "type": "field",
+        "protocol": [
+          "bittorrent"
+        ],
+        "outboundTag": "block"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "type": "field",
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:private",
+          "geosite:whitelist",
+          "geosite:category-ru"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "outboundTag": "proxy"
+      }
+    ],
+    "domainStrategy": "IPIfNonMatch"
+  },
+  "inbounds": [
+    {
+      "tag": "socks",
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "udp": true,
+        "auth": "noauth"
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "listen": "127.0.0.1",
+      "protocol": "http",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole"
+    }
+  ],
+  "remnawave": {
+    "injectHosts": [
+      {
+        "selector": {
+          "type": "tagRegex",
+          "pattern": "^TURKEY$"
+        },
+        "tagPrefix": "turkey"
+      }
+    ],
+    "addVirtualHostAsOutbound": true
+  }
+}
